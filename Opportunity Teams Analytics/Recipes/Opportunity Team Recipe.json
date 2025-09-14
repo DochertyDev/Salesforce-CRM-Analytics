@@ -1,0 +1,269 @@
+{
+    "version": "64.0",
+    "nodes": {
+        "LOAD_DATASET0": {
+            "action": "load",
+            "parameters": {
+                "dataset": {
+                    "connectionName": "SFDC_LOCAL",
+                    "label": "OpportunityTeamMember",
+                    "sourceObjectName": "OpportunityTeamMember",
+                    "type": "connectedDataset"
+                },
+                "fields": [
+                    "Id",
+                    "OpportunityId",
+                    "UserId",
+                    "Name",
+                    "PhotoUrl",
+                    "Title",
+                    "TeamMemberRole"
+                ],
+                "sampleDetails": {
+                    "sortBy": [],
+                    "type": "TopN"
+                }
+            },
+            "sources": []
+        },
+        "LOAD_DATASET1": {
+            "action": "load",
+            "parameters": {
+                "dataset": {
+                    "connectionName": "SFDC_LOCAL",
+                    "label": "Opportunity",
+                    "sourceObjectName": "Opportunity",
+                    "type": "connectedDataset"
+                },
+                "fields": [
+                    "Id",
+                    "IsDeleted",
+                    "AccountId",
+                    "RecordTypeId",
+                    "IsPrivate",
+                    "Name",
+                    "Description",
+                    "StageName",
+                    "Amount",
+                    "Probability",
+                    "ExpectedRevenue",
+                    "TotalOpportunityQuantity",
+                    "CloseDate",
+                    "Type",
+                    "NextStep",
+                    "LeadSource",
+                    "IsClosed",
+                    "IsWon",
+                    "ForecastCategory",
+                    "ForecastCategoryName",
+                    "CampaignId",
+                    "HasOpportunityLineItem",
+                    "Pricebook2Id",
+                    "OwnerId",
+                    "CreatedDate",
+                    "CreatedById",
+                    "LastModifiedDate",
+                    "LastModifiedById",
+                    "SystemModstamp",
+                    "LastActivityDate",
+                    "PushCount",
+                    "LastStageChangeDate",
+                    "FiscalQuarter",
+                    "FiscalYear",
+                    "Fiscal",
+                    "ContactId",
+                    "LastViewedDate",
+                    "LastReferencedDate",
+                    "HasOpenActivity",
+                    "HasOverdueTask",
+                    "LastAmountChangedHistoryId",
+                    "LastCloseDateChangedHistoryId",
+                    "DeliveryInstallationStatus__c",
+                    "TrackingNumber__c",
+                    "OrderNumber__c",
+                    "CurrentGenerators__c",
+                    "MainCompetitors__c",
+                    "Amount_CAD__c",
+                    "Opportunity_Source__c"
+                ],
+                "sampleDetails": {
+                    "sortBy": [],
+                    "type": "TopN"
+                }
+            },
+            "sources": []
+        },
+        "JOIN0": {
+            "action": "join",
+            "parameters": {
+                "joinType": "LOOKUP",
+                "leftKeys": [
+                    "OpportunityId"
+                ],
+                "rightKeys": [
+                    "Id"
+                ],
+                "rightQualifier": "Opportunity"
+            },
+            "schema": {
+                "fields": [],
+                "slice": {
+                    "fields": [],
+                    "ignoreMissingFields": true,
+                    "mode": "DROP"
+                }
+            },
+            "sources": [
+                "LOAD_DATASET0",
+                "LOAD_DATASET1"
+            ]
+        },
+        "LOAD_DATASET2": {
+            "action": "load",
+            "parameters": {
+                "dataset": {
+                    "connectionName": "SFDC_LOCAL",
+                    "label": "OpportunityLineItem",
+                    "sourceObjectName": "OpportunityLineItem",
+                    "type": "connectedDataset"
+                },
+                "fields": [
+                    "Id",
+                    "OpportunityId",
+                    "SortOrder",
+                    "PricebookEntryId",
+                    "Product2Id",
+                    "ProductCode",
+                    "Name",
+                    "Quantity",
+                    "TotalPrice",
+                    "UnitPrice",
+                    "ListPrice",
+                    "ServiceDate",
+                    "Description",
+                    "CreatedDate",
+                    "LastModifiedDate"
+                ],
+                "sampleDetails": {
+                    "sortBy": [],
+                    "type": "TopN"
+                }
+            },
+            "sources": []
+        },
+        "JOIN1": {
+            "action": "join",
+            "parameters": {
+                "joinType": "MULTI_VALUE_LOOKUP",
+                "leftKeys": [
+                    "Opportunity.Id"
+                ],
+                "rightKeys": [
+                    "OpportunityId"
+                ],
+                "rightQualifier": "Opportunit"
+            },
+            "schema": {
+                "fields": [],
+                "slice": {
+                    "fields": [],
+                    "ignoreMissingFields": true,
+                    "mode": "DROP"
+                }
+            },
+            "sources": [
+                "JOIN0",
+                "LOAD_DATASET2"
+            ]
+        },
+        "OUTPUT0": {
+            "action": "save",
+            "parameters": {
+                "dataset": {
+                    "label": "Presales Opportunities",
+                    "name": "PresalesOpportunities",
+                    "type": "analyticsDataset"
+                },
+                "fields": [],
+                "measuresToCurrencies": []
+            },
+            "sources": [
+                "JOIN1"
+            ]
+        }
+    },
+    "ui": {
+        "nodes": {
+            "LOAD_DATASET0": {
+                "label": "OpportunityTeamMember",
+                "type": "LOAD_DATASET",
+                "top": 112,
+                "left": 112,
+                "parameters": {
+                    "sampleSize": 2000
+                }
+            },
+            "LOAD_DATASET1": {
+                "label": "Opportunity",
+                "type": "LOAD_DATASET",
+                "top": 252,
+                "left": 112,
+                "parameters": {
+                    "sampleSize": 2000
+                }
+            },
+            "JOIN0": {
+                "label": "Join 0",
+                "type": "JOIN",
+                "top": 112,
+                "left": 252
+            },
+            "LOAD_DATASET2": {
+                "label": "OpportunityLineItem",
+                "type": "LOAD_DATASET",
+                "top": 392,
+                "left": 112,
+                "parameters": {
+                    "sampleSize": 2000
+                }
+            },
+            "JOIN1": {
+                "label": "Join 1",
+                "type": "JOIN",
+                "top": 112,
+                "left": 392
+            },
+            "OUTPUT0": {
+                "label": "Presales Opportunity Dataset",
+                "description": "",
+                "type": "OUTPUT",
+                "top": 112,
+                "left": 532
+            }
+        },
+        "connectors": [
+            {
+                "source": "LOAD_DATASET0",
+                "target": "JOIN0"
+            },
+            {
+                "source": "LOAD_DATASET1",
+                "target": "JOIN0"
+            },
+            {
+                "source": "JOIN0",
+                "target": "JOIN1"
+            },
+            {
+                "source": "LOAD_DATASET2",
+                "target": "JOIN1"
+            },
+            {
+                "source": "JOIN1",
+                "target": "OUTPUT0"
+            }
+        ],
+        "hiddenColumns": []
+    }
+}
+
